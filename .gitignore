@@ -1,6 +1,11 @@
 venv/
-.env
 __pycache__/
 *.pyc
-.chromadb/
+.env
+app/data/uploads/
+sample.pdf
+.idea/
+.vscode/
+*.log
 Attachments/
+
