@@ -1,66 +1,69 @@
 # Decoda
 
-Multilingual AI-powered document intelligence platform built with Retrieval-Augmented Generation (RAG), semantic search, vector embeddings, and LLM-powered grounded question answering.
+Multilingual AI-powered document intelligence platform built with Retrieval-Augmented Generation (RAG).
 
-## Overview
+## Current Status
 
-Decoda is an AI system that allows users to upload documents, understand their content semantically, and ask natural language questions to receive accurate grounded answers.
+Phase 4 Complete — FastAPI Backend MVP
 
-Current prototype supports PDF-based document question answering with multilingual response generation.
+Decoda can now:
+
+- upload PDF documents
+- answer questions from uploaded documents
+- generate multilingual grounded responses
+- expose production-style backend APIs
 
 ---
 
-## Current Features
+## Features
 
-- PDF text extraction
-- intelligent document chunking
-- semantic embeddings
-- vector similarity search
-- contextual retrieval
-- grounded answer generation
-- multilingual responses
-- LangSmith tracing for observability
-- modular RAG pipeline architecture
+Current implemented features:
+
+- PDF upload support
+- document question answering
+- multilingual answering (English + Kannada)
+- FastAPI backend APIs
+- Swagger/OpenAPI documentation
+- ChromaDB vector retrieval
+- sentence-transformers embeddings
+- Mistral LLM integration
+- LangSmith tracing
+- modular backend architecture
 
 ---
 
 ## Tech Stack
 
-### AI / LLM
+Backend:
+- Python
+- FastAPI
+- Pydantic
+
+AI / RAG:
+- pypdf
+- sentence-transformers
+- ChromaDB
 - Mistral AI
-- Sentence Transformers
 - LangSmith
 
-### Vector Search
-- ChromaDB (development)
-- Supabase pgvector (planned production)
-
-### Backend
-- Python
-- FastAPI (Phase 4)
-
-### Utilities
-- pypdf
+Utilities:
 - python-dotenv
-- LangChain text splitters
 
 ---
 
-## Current Architecture
+## Project Structure
 
-```text
-PDF
- ↓
-Text Extraction
- ↓
-Chunking
- ↓
-Embeddings
- ↓
-Vector Storage
- ↓
-Semantic Retrieval
- ↓
-LLM Generation
- ↓
-Multilingual Response
+``` id="itkp43"
+Decoda/
+├── app/
+│   ├── api/
+│   ├── core/
+│   ├── schemas/
+│   ├── services/
+│   ├── data/uploads/
+│   └── main.py
+│
+├── .env.example
+├── .gitignore
+├── requirements.txt
+└── README.md
