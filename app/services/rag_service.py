@@ -1,44 +1,65 @@
-import os
+from app.services.embedding_service import (
+    generate_embeddings
+)
 
-from app.services.pdf_service import extract_text_from_pdf
-from app.services.chunking_service import chunk_text
-from app.services.embedding_service import generate_embeddings
-from app.services.retrieval_service import store_chunks, retrieve_relevant_chunks
-from app.services.llm_service import generate_answer
+from app.services.retrieval_service import (
+    retrieve_relevant_chunks
+)
+
+from app.services.llm_service import (
+    generate_answer
+)
 
 
 def run_rag_pipeline(
-    pdf_path: str,
     question: str,
     language: str = "English"
 ):
-    text = extract_text_from_pdf(pdf_path)
+    # Generate embedding for question
+    question_embedding = generate_embeddings(
+        [question]
+    )[0]
 
-    if not text.strip():
-        raise ValueError("PDF contains no extractable text.")
-
-    chunks = chunk_text(text)
-
-    embeddings = generate_embeddings(chunks)
-
-    document_id = os.path.basename(pdf_path)
-
-    store_chunks(
-        chunks=chunks,
-        embeddings=embeddings,
-        document_id=document_id
+    # Retrieve relevant chunks + metadata
+    retrieval_results = retrieve_relevant_chunks(
+        question_embedding
     )
 
-    question_embedding = generate_embeddings([question])[0]
+    # Extract chunk text
+    retrieved_chunks = retrieval_results[
+        "documents"
+    ]
 
-    retrieved_chunks = retrieve_relevant_chunks(question_embedding)
+    # Extract metadata
+    retrieved_metadata = retrieval_results[
+        "metadatas"
+    ]
 
-    context = "\n\n".join(retrieved_chunks)
+    # Store only valid citation metadata
+    clean_sources = []
 
+    for metadata in retrieved_metadata:
+        if (
+            metadata is not None
+            and "document_id" in metadata
+            and "page" in metadata
+        ):
+            clean_sources.append(metadata)
+
+    # Combine chunks into one context
+    context = "\n\n".join(
+        retrieved_chunks
+    )
+
+    # Generate answer
     answer = generate_answer(
         context=context,
         question=question,
         language=language
     )
 
-    return answer
+    # Return answer + citations
+    return {
+        "answer": answer,
+        "sources": clean_sources
+    }
