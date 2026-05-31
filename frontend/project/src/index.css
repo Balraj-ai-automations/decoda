@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-brand-dark: #1a0a4e;
+    --color-brand-primary: #6C5CE7;
+    --color-brand-light: #EEEDFE;
+
+    --color-accent: #EF9F27;
+    --color-accent-light: #FAC775;
+    --color-accent-dark: #BA7517;
+
+    --color-surface: #F9F9FB;
+
+    --color-text-dark: #1a0a4e;
+    --color-text-muted: #888780;
+
+    --color-success: #1D9E75;
+    --color-error: #E24B4A;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    color: var(--color-text-dark);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-semibold;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-medium rounded-xl px-6 py-3 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-accent text-white hover:bg-accent-dark focus:ring-accent;
+  }
+
+  .btn-secondary {
+    @apply bg-brand-primary text-white hover:bg-brand-dark focus:ring-brand-primary;
+  }
+
+  .btn-outline {
+    @apply border-2 border-brand-primary text-brand-primary hover:bg-brand-light focus:ring-brand-primary;
+  }
+
+  .btn-ghost {
+    @apply text-brand-dark hover:bg-surface focus:ring-brand-primary;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6;
+  }
+
+  .pill {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
