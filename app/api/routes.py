@@ -73,14 +73,13 @@ def delete_uploaded_document(
         document_id
     )
 
-    if not os.path.exists(file_path):
-        raise HTTPException(
-            status_code=404,
-            detail="Document not found."
-        )
-
     try:
-        os.remove(file_path)
+        # Delete file only if it exists
+        # Railway resets disk on redeploy so file may be gone
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        # Always clean up DB and vector chunks
         delete_document_chunks(document_id)
         delete_document(document_id)
 
