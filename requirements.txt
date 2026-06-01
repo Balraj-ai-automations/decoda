@@ -10,4 +10,4 @@ langchain-core
 pymupdf
 requests
 numpy
-mistralai
+mistralai==0.4.2
