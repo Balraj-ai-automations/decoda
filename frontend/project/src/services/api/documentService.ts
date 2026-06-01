@@ -1,25 +1,17 @@
 import type { Document, ApiError } from '../../types';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 /**
  * Backend response shape for a document.
- * Typed so we avoid doc: any in mappedDocuments.
  */
 interface BackendDocument {
   document_id: string;
   filename: string;
   uploaded_at: string;
   chunk_count: number;
-  page_count?: number; // optional — add to backend later if needed
+  page_count?: number;
 }
-
-/**
- * Document Service
- * Handles document-related operations
- *
- * Endpoints:
- * - GET /documents
- * - DELETE /documents/{document_id}
- */
 
 interface DocumentsResult {
   success: boolean;
@@ -38,15 +30,13 @@ interface DeleteResult {
 export async function fetchDocuments(): Promise<DocumentsResult> {
   try {
     const response = await fetch(
-      'http://localhost:8000/documents'
+      `${API_URL}/documents`
     );
 
     if (!response.ok) {
       return {
         success: false,
-        error: {
-          message: 'Failed to fetch documents',
-        },
+        error: { message: 'Failed to fetch documents' },
       };
     }
 
@@ -59,18 +49,12 @@ export async function fetchDocuments(): Promise<DocumentsResult> {
       pageCount: doc.page_count ?? doc.chunk_count,
     }));
 
-    return {
-      success: true,
-      data: mappedDocuments,
-    };
+    return { success: true, data: mappedDocuments };
   } catch (error) {
     console.error('Fetch documents error:', error);
-
     return {
       success: false,
-      error: {
-        message: 'Unable to connect to backend',
-      },
+      error: { message: 'Unable to connect to backend' },
     };
   }
 }
@@ -80,21 +64,12 @@ export async function fetchDocuments(): Promise<DocumentsResult> {
  */
 export async function fetchDocumentById(
   documentId: string
-): Promise<{
-  success: boolean;
-  data?: Document;
-  error?: ApiError;
-}> {
+): Promise<{ success: boolean; data?: Document; error?: ApiError }> {
   try {
     const documentsResult = await fetchDocuments();
 
     if (!documentsResult.success || !documentsResult.data) {
-      return {
-        success: false,
-        error: {
-          message: 'Document not found',
-        },
-      };
+      return { success: false, error: { message: 'Document not found' } };
     }
 
     const document = documentsResult.data.find(
@@ -102,67 +77,42 @@ export async function fetchDocumentById(
     );
 
     if (!document) {
-      return {
-        success: false,
-        error: {
-          message: 'Document not found',
-        },
-      };
+      return { success: false, error: { message: 'Document not found' } };
     }
 
-    return {
-      success: true,
-      data: document,
-    };
+    return { success: true, data: document };
   } catch (error) {
     console.error(error);
-
-    return {
-      success: false,
-      error: {
-        message: 'Failed to fetch document',
-      },
-    };
+    return { success: false, error: { message: 'Failed to fetch document' } };
   }
 }
 
 /**
  * Delete a document by ID
- * Removes PDF file, vector chunks, and SQLite metadata
  */
 export async function deleteDocument(
   documentId: string
 ): Promise<DeleteResult> {
   try {
     const response = await fetch(
-      `http://localhost:8000/documents/${documentId}`,
-      {
-        method: 'DELETE',
-      }
+      `${API_URL}/documents/${documentId}`,
+      { method: 'DELETE' }
     );
 
     if (!response.ok) {
       const errorText = await response.text();
-
       return {
         success: false,
-        error: {
-          message: errorText || 'Delete failed',
-        },
+        error: { message: errorText || 'Delete failed' },
       };
     }
 
-    return {
-      success: true,
-    };
+    return { success: true };
   } catch (error) {
     console.error('Delete error:', error);
-
     return {
       success: false,
-      error: {
-        message: 'Unable to connect to backend',
-      },
+      error: { message: 'Unable to connect to backend' },
     };
   }
 }

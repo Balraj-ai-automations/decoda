@@ -1,16 +1,10 @@
-import type {
-  ChatMessage,
-  Language,
-  Citation,
-  ApiError,
-} from '../../types';
+import type { ChatMessage, Language, Citation, ApiError } from '../../types';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 /**
  * Chat Service
  * Handles document question-answer interactions
- *
- * Endpoint:
- * POST http://localhost:8000/ask
  */
 
 interface AskRequest {
@@ -38,12 +32,10 @@ export async function askQuestion(
 ): Promise<AskResult> {
   try {
     const response = await fetch(
-      'http://localhost:8000/ask',
+      `${API_URL}/ask`,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question: request.question,
           language: request.language,
@@ -54,12 +46,9 @@ export async function askQuestion(
 
     if (!response.ok) {
       const errorText = await response.text();
-
       return {
         success: false,
-        error: {
-          message: errorText || 'Failed to get answer',
-        },
+        error: { message: errorText || 'Failed to get answer' },
       };
     }
 
@@ -72,41 +61,23 @@ export async function askQuestion(
 
     return {
       success: true,
-      data: {
-        answer: data.answer,
-        citations,
-      },
+      data: { answer: data.answer, citations },
     };
   } catch (error) {
     console.error('Ask question error:', error);
-
     return {
       success: false,
-      error: {
-        message: 'Unable to connect to backend',
-      },
+      error: { message: 'Unable to connect to backend' },
     };
   }
 }
 
 /**
- * Chat history placeholder
- * Future feature
+ * Chat history placeholder — future feature
  */
 export async function fetchChatHistory(
   documentId: string
-): Promise<{
-  success: boolean;
-  data?: ChatMessage[];
-  error?: ApiError;
-}> {
-  console.log(
-    'Chat history not implemented yet:',
-    documentId
-  );
-
-  return {
-    success: true,
-    data: [],
-  };
+): Promise<{ success: boolean; data?: ChatMessage[]; error?: ApiError }> {
+  console.log('Chat history not implemented yet:', documentId);
+  return { success: true, data: [] };
 }
