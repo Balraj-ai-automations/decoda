@@ -60,9 +60,7 @@ def health_check():
 
 @router.get("/documents")
 def get_documents():
-    # Fetch all uploaded documents
     documents = get_all_documents()
-
     return documents
 
 
@@ -70,13 +68,11 @@ def get_documents():
 def delete_uploaded_document(
     document_id: str
 ):
-    # Build PDF path
     file_path = os.path.join(
         settings.UPLOAD_DIR,
         document_id
     )
 
-    # Ensure file exists
     if not os.path.exists(file_path):
         raise HTTPException(
             status_code=404,
@@ -84,29 +80,19 @@ def delete_uploaded_document(
         )
 
     try:
-        # Delete PDF file
         os.remove(file_path)
-
-        # Delete vector chunks
-        delete_document_chunks(
-            document_id
-        )
-
-        # Delete SQLite metadata
-        delete_document(
-            document_id
-        )
+        delete_document_chunks(document_id)
+        delete_document(document_id)
 
         return {
-            "message": (
-                "Document deleted successfully"
-            )
+            "message": "Document deleted successfully"
         }
 
-    except Exception:
+    except Exception as e:
+        print("DELETE ERROR:", str(e))
         raise HTTPException(
             status_code=500,
-            detail="Failed to delete document."
+            detail=str(e)
         )
 
 
@@ -117,34 +103,28 @@ def delete_uploaded_document(
 def upload_pdf(
     file: UploadFile = File(...)
 ):
-    # Validate file type
     if file.content_type != "application/pdf":
         raise HTTPException(
             status_code=400,
             detail="Only PDF files are allowed."
         )
 
-    # Generate unique document ID
     document_id = f"{uuid.uuid4()}.pdf"
 
-    # Build file path
     file_path = os.path.join(
         settings.UPLOAD_DIR,
         document_id
     )
 
     try:
-        # Save uploaded PDF
         with open(file_path, "wb") as buffer:
             buffer.write(file.file.read())
 
-        # Index document into ChromaDB
         chunk_count = index_document(
             pdf_path=file_path,
             document_id=document_id
         )
 
-        # Store metadata into SQLite
         insert_document(
             document_id=document_id,
             filename=file.filename,
@@ -154,16 +134,15 @@ def upload_pdf(
         )
 
         return {
-            "message": (
-                "PDF uploaded successfully"
-            ),
+            "message": "PDF uploaded successfully",
             "document_id": document_id
         }
 
-    except Exception:
+    except Exception as e:
+        print("UPLOAD ERROR:", str(e))
         raise HTTPException(
             status_code=500,
-            detail="Failed to upload document."
+            detail=str(e)
         )
 
 
@@ -174,13 +153,11 @@ def upload_pdf(
 def ask_question(
     request: AskRequest
 ):
-    # Build document path
     file_path = os.path.join(
         settings.UPLOAD_DIR,
         request.document_id
     )
 
-    # Ensure document exists
     if not os.path.exists(file_path):
         raise HTTPException(
             status_code=404,
@@ -188,12 +165,10 @@ def ask_question(
         )
 
     try:
-        # Run RAG pipeline
         result = run_rag_pipeline(
             question=request.question,
             language=request.language
         )
-
         return result
 
     except ValueError as e:
@@ -202,10 +177,11 @@ def ask_question(
             detail=str(e)
         )
 
-    except Exception:
+    except Exception as e:
+        print("ASK ERROR:", str(e))
         raise HTTPException(
             status_code=500,
-            detail="Internal processing error."
+            detail=str(e)
         )
 
 
@@ -217,15 +193,11 @@ def summarize(
     request: SummarizeRequest
 ):
     try:
-        # Generate document summary
         summary = summarize_document(
             document_id=request.document_id,
             language=request.language
         )
-
-        return {
-            "summary": summary
-        }
+        return {"summary": summary}
 
     except ValueError as e:
         raise HTTPException(
@@ -233,10 +205,9 @@ def summarize(
             detail=str(e)
         )
 
-    except Exception:
+    except Exception as e:
+        print("SUMMARIZE ERROR:", str(e))
         raise HTTPException(
             status_code=500,
-            detail=(
-                "Internal summarization error."
-            )
+            detail=str(e)
         )
