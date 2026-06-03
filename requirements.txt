@@ -5,7 +5,6 @@ python-multipart
 pydantic
 pypdf
 chromadb==0.4.24
-sentence-transformers
 langchain-text-splitters
 mistralai
 numpy==1.26.4

@@ -38,7 +38,7 @@ def store_chunks(
         return
 
     collection.add(
-        embeddings=embeddings.tolist(),
+        embeddings=embeddings,
         documents=chunks,
         ids=ids,
         metadatas=metadata_list
@@ -53,7 +53,7 @@ def retrieve_relevant_chunks(
 
     results = collection.query(
         query_embeddings=[
-            question_embedding.tolist()
+            question_embedding
         ],
         n_results=top_k
     )

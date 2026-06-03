@@ -1,19 +1,21 @@
-from sentence_transformers import SentenceTransformer
+from mistralai.client import Mistral
 
-embedding_model = None
+from app.core.config import settings
 
-
-def get_embedding_model():
-    global embedding_model
-
-    if embedding_model is None:
-        embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-
-    return embedding_model
+client = Mistral(
+    api_key=settings.MISTRAL_API_KEY
+)
 
 
 def generate_embeddings(text_chunks: list[str]):
-    model = get_embedding_model()
-    embeddings = model.encode(text_chunks)
+    response = client.embeddings.create(
+        model="mistral-embed",
+        inputs=text_chunks
+    )
+
+    embeddings = [
+        item.embedding
+        for item in response.data
+    ]
 
     return embeddings
