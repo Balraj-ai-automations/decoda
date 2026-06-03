@@ -8,4 +8,4 @@ chromadb==0.4.24
 sentence-transformers
 langchain-text-splitters
 mistralai
-numpy
+numpy==1.26.4
