@@ -4,7 +4,7 @@ python-dotenv
 python-multipart
 pydantic
 pypdf
-chromadb
+chromadb==0.4.24
 langchain-text-splitters
 mistralai
 numpy
