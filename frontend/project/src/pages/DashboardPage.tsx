@@ -10,7 +10,10 @@ import { EmptyState } from '../components/ui/EmptyState';
 import type { Document } from '../types';
 
 import { uploadDocument } from '../services/api/uploadService';
-import { fetchDocuments } from '../services/api/documentService';
+import {
+  fetchDocuments,
+  deleteDocument,
+} from '../services/api/documentService';
 
 export function DashboardPage() {
   const navigate = useNavigate();
@@ -69,8 +72,30 @@ export function DashboardPage() {
     }
   };
 
-  const handleDelete = (id: string) => {
-    console.log('Delete document:', id);
+  const handleDelete = async (id: string) => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this document?'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const result = await deleteDocument(id);
+
+    if (!result.success) {
+      alert(
+        result.error?.message ||
+        'Failed to delete document'
+      );
+      return;
+    }
+
+    const documentsResult = await fetchDocuments();
+
+    if (documentsResult.success && documentsResult.data) {
+      setDocuments(documentsResult.data);
+    }
   };
 
   return (

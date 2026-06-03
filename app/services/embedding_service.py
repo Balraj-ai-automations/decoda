@@ -1,10 +1,11 @@
-from sentence_transformers import SentenceTransformer
+import os
+from mistralai import Mistral
 
-
-embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-
+client = Mistral(api_key=os.getenv("MISTRAL_API_KEY"))
 
 def generate_embeddings(text_chunks: list[str]):
-    embeddings = embedding_model.encode(text_chunks)
-
-    return embeddings
+    response = client.embeddings.create(
+        model="mistral-embed",
+        inputs=text_chunks
+    )
+    return [item.embedding for item in response.data]

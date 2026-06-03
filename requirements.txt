@@ -5,7 +5,6 @@ python-multipart
 pydantic
 pypdf
 chromadb
-sentence-transformers
 langchain-text-splitters
 mistralai
 numpy
