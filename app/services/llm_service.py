@@ -1,10 +1,9 @@
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+from mistralai.client import Mistral
 
 from app.core.config import settings
 
 
-client = MistralClient(api_key=settings.MISTRAL_API_KEY)
+client = Mistral(api_key=settings.MISTRAL_API_KEY)
 
 
 def generate_answer(context: str, question: str, language: str = "English"):
@@ -25,13 +24,13 @@ Question:
 {question}
 """
 
-    response = client.chat(
+    response = client.chat.complete(
         model="mistral-small-latest",
         messages=[
-            ChatMessage(
-                role="user",
-                content=prompt
-            )
+            {
+                "role": "user",
+                "content": prompt
+            }
         ]
     )
 
